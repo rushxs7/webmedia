@@ -4,55 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Link;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LinkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $links = Link::where('user_id', Auth::id())->get();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        // return view();
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function submit(Request $request)
     {
-        //
-    }
+        $request->validate([
+            'link' => 'url'
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Link $link)
-    {
-        //
-    }
+        // Shorten URL
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Link $link)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Link $link)
-    {
-        //
+        // Return with flash message
     }
 
     /**
@@ -60,6 +37,6 @@ class LinkController extends Controller
      */
     public function destroy(Link $link)
     {
-        //
+        // Destroy link
     }
 }
