@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('links', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
-            $table->string('hash');
+            $table->string('hash')->nullable();
             $table->string('original_link');
             $table->timestamps();
         });

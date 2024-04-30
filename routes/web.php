@@ -3,7 +3,9 @@
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\PingController;
 use App\Http\Controllers\WhoisController;
+use App\Models\Link;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return Redirect::route('login');
 });
 
 Auth::routes();
@@ -46,4 +48,10 @@ Route::middleware('auth')->group(function () {
     Route::put('profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::get('/{hashid}', [LinkController::class, 'visit']);
+Route::get('/{hashid}', function($hashid) {
+    $link = Link::where('hash', $hashid)->first();
+    if (!$link) {
+        return abort(404);
+    }
+    return Redirect::away($link->original_link);
+})->name('shortenedurl');

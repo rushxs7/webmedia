@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Link;
+use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class LinkController extends Controller
 {
@@ -13,9 +15,11 @@ class LinkController extends Controller
      */
     public function index(Request $request)
     {
-        $links = Link::where('user_id', Auth::id())->get();
+        $links = Link::where('user_id', Auth::id())
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
-        // return view();
+        return view('shortener.index', ['links' => $links]);
     }
 
     /**
@@ -27,7 +31,18 @@ class LinkController extends Controller
             'link' => 'url'
         ]);
 
+        $hashIds = new Hashids();
+
         // Shorten URL
+        $link = Link::create([
+            'user_id' => Auth::id(),
+            'original_link' => $request->link
+        ]);
+
+        $link->hash = $hashIds->encode($link->id, 7);
+        $link->save();
+
+        return Redirect::route('shortener.index')->with('success', 'Shortened URL succesfully.');
 
         // Return with flash message
     }
@@ -38,5 +53,7 @@ class LinkController extends Controller
     public function destroy(Link $link)
     {
         // Destroy link
+        $link->delete();
+        return Redirect::route('shortener.index')->with('success', 'Link deleted succesfully.');
     }
 }
